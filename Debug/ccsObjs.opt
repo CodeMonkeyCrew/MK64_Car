@@ -1,0 +1,1 @@
+"./color_sensor.obj" "./main.obj" "./spi.obj" "./timer_pwm.obj" "./util.obj" "../lnk_msp430g2553.cmd" -llibc.a 
