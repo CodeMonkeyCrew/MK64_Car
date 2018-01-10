@@ -4,6 +4,12 @@
 #include "spi.h"
 #include "util.h"
 
+#define DEFAULT_STEERING_VALUE 127 // center steering
+#define DEFAULT_ENGINE_VALUE 127 // turn off engine
+
+unsigned char steeringValue = DEFAULT_STEERING_VALUE;
+unsigned char engineValue = DEFAULT_ENGINE_VALUE;
+
 // measured average values for black and white
 // row index = color, row[0] = min, row[1] = max
 static unsigned int color_ranges[NUMBER_OF_COLORS][2] = {
@@ -21,8 +27,8 @@ int main(void)
     BCSCTL1 = CALBC1_16MHZ; // set range
     DCOCTL = CALDCO_16MHZ; // set DCO step and modulation
 
-    timer_pwm_init_steering(255);
-    timer_pwm_init_engine(255);
+    timer_pwm_init_steering(steeringValue);
+    timer_pwm_init_engine(engineValue);
     timer_pwm_start();
 
     color_sensor_init();
@@ -39,5 +45,7 @@ int main(void)
         b = map(color_values[blue], color_ranges[blue][0], color_ranges[blue][1], 0, 255);
         c = map(color_values[clear], color_ranges[clear][0], color_ranges[clear][1], 0, 255);
         spi_send(r, g, b, c);
+        timer_pwm_set_steering(steeringValue);
+        timer_pwm_set_engine(engineValue);
     }
 }

@@ -1,19 +1,26 @@
 #include <msp430.h>
 #include "spi.h"
+#include "timer_pwm.h"
 
 #define SEND_R 0
 #define SEND_G 1
 #define SEND_B 2
 #define SEND_C 3
-#define DEFAULT_VALUE 0
-#define NUMBER_OF_VALUES 4
+#define RECEIVE_STEERING 0
+#define RECEIVE_ENGINE 1
+#define DEFAULT_SEND_VALUE 0
+#define FRAME_SIZE 4
+
+extern unsigned char steeringValue;
+extern unsigned char engineValue;
 
 static int sendCursor = -1;
+static int receiveCursor = -1;
 
-static unsigned char rValue = DEFAULT_VALUE;
-static unsigned char gValue = DEFAULT_VALUE;
-static unsigned char bValue = DEFAULT_VALUE;
-static unsigned char cValue = DEFAULT_VALUE;
+static unsigned char rValue = DEFAULT_SEND_VALUE;
+static unsigned char gValue = DEFAULT_SEND_VALUE;
+static unsigned char bValue = DEFAULT_SEND_VALUE;
+static unsigned char cValue = DEFAULT_SEND_VALUE;
 
 void spi_init(void)
 {
@@ -68,8 +75,9 @@ __interrupt void port1_isr(void)
         // prepare tx buffer for first transmission
         UCB0TXBUF = rValue; // start with transmitting r value
 
-        // update send cursor
+        // update send / receive cursor
         sendCursor = SEND_G;
+        receiveCursor = RECEIVE_STEERING;
     }
 }
 
@@ -94,14 +102,14 @@ __interrupt void spi_tx_isr(void)
             UCB0TXBUF = cValue;
             break;
         default:
-            UCB0TXBUF = DEFAULT_VALUE;
+            UCB0TXBUF = DEFAULT_SEND_VALUE;
             break;
         }
 
         // update send cursor
         if (sendCursor >= 0)
         {
-            if (++sendCursor >= NUMBER_OF_VALUES)
+            if (++sendCursor >= FRAME_SIZE)
             {
                 sendCursor = 0;
             }
@@ -114,9 +122,28 @@ __interrupt void spi_rx_isr(void)
 {
     if (IFG2 & UCB0RXIFG)
     {
-        // receiving data
+        // receive data
         unsigned char data = UCB0RXBUF;
-        volatile unsigned char blub = data;
-        // TODO: set steering and engine
+        switch (receiveCursor)
+        {
+        case RECEIVE_STEERING:
+            steeringValue = data;
+            break;
+        case RECEIVE_ENGINE:
+            engineValue = data;
+            break;
+        default:
+            // ignore other bytes
+            break;
+        }
+
+        // update receive cursor
+        if (receiveCursor >= 0)
+        {
+            if (++receiveCursor >= FRAME_SIZE)
+            {
+                receiveCursor = 0;
+            }
+        }
     }
 }
