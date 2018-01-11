@@ -6,6 +6,8 @@
 
 #define DEFAULT_STEERING_VALUE 127 // center steering
 #define DEFAULT_ENGINE_VALUE 127 // turn off engine
+#define MIN_STEERING 30
+#define MAX_STEERING 225
 
 unsigned char steeringValue = DEFAULT_STEERING_VALUE;
 unsigned char engineValue = DEFAULT_ENGINE_VALUE;
@@ -45,7 +47,7 @@ int main(void)
         b = map(color_values[blue], color_ranges[blue][0], color_ranges[blue][1], 0, 255);
         c = map(color_values[clear], color_ranges[clear][0], color_ranges[clear][1], 0, 255);
         spi_send(r, g, b, c);
-        timer_pwm_set_steering(steeringValue);
+        timer_pwm_set_steering(map(steeringValue, 0, 255, MIN_STEERING, MAX_STEERING));
         timer_pwm_set_engine(engineValue);
     }
 }
