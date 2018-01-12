@@ -34,3 +34,13 @@ MSP430G2553
 | S3   | color selection   | P2.0     | 0       | 0       | 0       |
 | OE   | output enable     | P1.0     | 1       | 0       | 0       |
 | OUT  | output signal     | P1.1     | 0       | 1       | 0       |
+
+### SPI Communication
+
+| Name | Function              | GPIO Pin | DIR       | PxSEL   | PxSEL2  |
+| ---- | --------------------- | -------- |:---------:|:-------:|:-------:|
+| STE  | slave transmit enable | P1.4     | 0         | 0       | 0       |
+| CLK  | clock input           | P1.5     | from USCI | 1       | 1       |
+| SIMO | slave input           | P1.7     | from USCI | 1       | 1       |
+| SOMI | slave output          | P1.6     | from USCI | 1       | 1       |
+
