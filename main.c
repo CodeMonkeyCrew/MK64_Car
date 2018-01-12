@@ -39,7 +39,7 @@ int main(void)
 
     __enable_interrupt();
 
-    unsigned int r, g, b, c;
+    unsigned int r, g, b, c; steering, engine;
     while (1)
     {
         r = map(color_values[red], color_ranges[red][0], color_ranges[red][1], 0, 255);
@@ -47,7 +47,20 @@ int main(void)
         b = map(color_values[blue], color_ranges[blue][0], color_ranges[blue][1], 0, 255);
         c = map(color_values[clear], color_ranges[clear][0], color_ranges[clear][1], 0, 255);
         spi_send(r, g, b, c);
-        timer_pwm_set_steering(map(steeringValue, 0, 255, MIN_STEERING, MAX_STEERING));
-        timer_pwm_set_engine(engineValue);
+        steering = steeringValue;
+        engine = engineValue;
+        if (steering < MIN_STEERING)
+        {
+            timer_pwm_set_steering(MIN_STEERING);
+        }
+        else if (steering > MAX_STEERING)
+        {
+            timer_pwm_set_steering(MAX_STEERING);
+        }
+        else
+        {
+            timer_pwm_set_steering(steering);
+        }
+        timer_pwm_set_engine(engine);
     }
 }
