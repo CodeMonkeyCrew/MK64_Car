@@ -7,11 +7,18 @@ MSP430G2553
 [Code Composer Studio 7.4.0](http://processors.wiki.ti.com/index.php/Download_CCS#Code_Composer_Studio_Version_7_Downloads)
 
 ## Features
-- Generates PWM signal to control motors and servos (engine / steering)
+- Generates PWM signals to control motors and servos (engine / steering)
 - Measures color sensor output signal frequency to determine color values (RGBC)
 - Communicates with MK64_Car_Modem (TODO: add link) via SPI
 
 ## Used GPIO Pins
+
+### PWM Signals
+
+| Function | GPIO Pin | DIR     | PxSEL   | PxSEL2  |
+| -------- | -------- |:-------:|:-------:|:-------:|
+| steering | P2.1     | 1       | 1       | 0       |
+| engine   | P2.4     | 1       | 1       | 0       |
 
 ### Color Sensor
 
