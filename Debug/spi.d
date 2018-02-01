@@ -12,6 +12,7 @@ spi.obj: C:/ti/ccsv7/tools/compiler/ti-cgt-msp430_16.9.6.LTS/include/inttypes.h
 spi.obj: C:/ti/ccsv7/tools/compiler/ti-cgt-msp430_16.9.6.LTS/include/stdint.h
 spi.obj: C:/ti/ccsv7/tools/compiler/ti-cgt-msp430_16.9.6.LTS/include/_fmt_specifier.h
 spi.obj: C:/ti/ccsv7/tools/compiler/ti-cgt-msp430_16.9.6.LTS/include/linkage.h
+spi.obj: ../color_sensor.h
 
 ../spi.c: 
 C:/ti/ccsv7/ccs_base/msp430/include/msp430.h: 
@@ -25,3 +26,4 @@ C:/ti/ccsv7/tools/compiler/ti-cgt-msp430_16.9.6.LTS/include/inttypes.h:
 C:/ti/ccsv7/tools/compiler/ti-cgt-msp430_16.9.6.LTS/include/stdint.h: 
 C:/ti/ccsv7/tools/compiler/ti-cgt-msp430_16.9.6.LTS/include/_fmt_specifier.h: 
 C:/ti/ccsv7/tools/compiler/ti-cgt-msp430_16.9.6.LTS/include/linkage.h: 
+../color_sensor.h: 

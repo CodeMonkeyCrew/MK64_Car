@@ -14,11 +14,11 @@ unsigned char engineValue = DEFAULT_ENGINE_VALUE;
 
 // measured average values for black and white
 // row index = color, row[0] = min, row[1] = max
-static unsigned int color_ranges[NUMBER_OF_COLORS][2] = {
-    { 2980, 200 }, // red
-    { 2690, 200 }, // blue
-    { 940, 85 }, // clear
-    { 3300, 200 } // green
+unsigned int color_ranges[NUMBER_OF_COLORS][2] = {
+    { 925, 127 }, // red
+    { 853, 127 }, // blue
+    { 293, 53 }, // clear
+    { 1060, 127 } // green
 };
 
 int main(void)
@@ -28,6 +28,28 @@ int main(void)
     // set system clock to 16 MHz
     BCSCTL1 = CALBC1_16MHZ; // set range
     DCOCTL = CALDCO_16MHZ; // set DCO step and modulation
+
+    // select P1.3 (GPIO) I/O function
+    P1SEL &= ~BIT3;
+    P1SEL2 &= ~BIT3;
+
+    // setup P1.3 as input
+    P1DIR &= ~BIT3;
+
+    // select pullup resistor
+    P1OUT |= BIT3;
+
+    // enable pullup resistor
+    P1REN |= BIT3;
+
+    // interrupt on high-to-low transition
+    P1IES |= BIT3;
+
+    // clear pending interrupts
+    P1IFG &= ~BIT3;
+
+    // enable interrupt on P1.3
+    P1IE |= BIT3;
 
     timer_pwm_init_steering(steeringValue);
     timer_pwm_init_engine(engineValue);
@@ -39,7 +61,7 @@ int main(void)
 
     __enable_interrupt();
 
-    unsigned int r, g, b, c; steering, engine;
+    unsigned int r, g, b, c, steering, engine;
     while (1)
     {
         r = map(color_values[red], color_ranges[red][0], color_ranges[red][1], 0, 255);

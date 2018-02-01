@@ -30,7 +30,7 @@ MSP430G2553
 
 | Name | Function          | GPIO Pin | DIR     | PxSEL   | PxSEL2  |
 | ---- | ----------------- | -------- |:-------:|:-------:|:-------:|
-| S0   | frequency scaling | P1.3     | 1       | 0       | 0       |
+| S0   | frequency scaling | P2.2     | 1       | 0       | 0       |
 | S1   | frequency scaling | P1.2     | 1       | 0       | 0       |
 | S2   | color selection   | P2.3     | 1       | 0       | 0       |
 | S3   | color selection   | P2.0     | 1       | 0       | 0       |

@@ -9,11 +9,11 @@ static Color_t current_color;
 
 void color_sensor_init(void)
 {
-    // setup P1.3 (S0), P1.2 (S1)
-    P1DIR |= BIT3 + BIT2;
+    // setup P1.2 (S1) as output
+    P1DIR |= BIT2;
 
-    // setup P2.3 (S2) and P2.0 (S3) as output
-    P2DIR |= BIT3 + BIT0;
+    // setup P2.2 (S0), P2.3 (S2) and P2.0 (S3) as output
+    P2DIR |= BIT2 + BIT3 + BIT0;
 
     // setup P1.1 (OUT) as input
     P1DIR &= ~BIT1;
@@ -22,7 +22,8 @@ void color_sensor_init(void)
     P1DIR |= BIT0;
 
     // set frequency scaling to 100% (S0 to high, S1 to high)
-    P1OUT |= BIT3 + BIT2;
+    P2OUT |= BIT2;
+    P1OUT |= BIT2;
 
     // set OE to low
     P1OUT &= ~BIT0;
@@ -84,7 +85,8 @@ __interrupt void color_sensor_timer_isr(void)
             unsigned int timer_ticks;
             if (overflow)
             {
-                timer_ticks = current_timer_value + (0xFFFF - previous_timer_value);
+                timer_ticks = current_timer_value
+                        + (0xFFFF - previous_timer_value);
                 overflow = FALSE;
             }
             else

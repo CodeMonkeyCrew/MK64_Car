@@ -1,6 +1,7 @@
 #include <msp430.h>
 #include "spi.h"
 #include "timer_pwm.h"
+#include "color_sensor.h"
 
 #define SEND_R 0
 #define SEND_G 1
@@ -11,6 +12,7 @@
 #define DEFAULT_SEND_VALUE 0
 #define FRAME_SIZE 4
 
+extern unsigned int color_ranges[NUMBER_OF_COLORS][2];
 extern unsigned char steeringValue;
 extern unsigned char engineValue;
 
@@ -42,7 +44,8 @@ void spi_init(void)
     P1IE |= BIT4;
 }
 
-void spi_send(unsigned char newRValue, unsigned char newGValue, unsigned char newBValue, unsigned char newCValue)
+void spi_send(unsigned char newRValue, unsigned char newGValue,
+              unsigned char newBValue, unsigned char newCValue)
 {
     rValue = newRValue;
     gValue = newGValue;
@@ -53,6 +56,30 @@ void spi_send(unsigned char newRValue, unsigned char newGValue, unsigned char ne
 #pragma vector=PORT1_VECTOR
 __interrupt void port1_isr(void)
 {
+    if (P1IFG & BIT3)
+    {
+        // clear P1.3 interrupt flag
+        P1IFG &= ~BIT3;
+        // disable button interrupt
+        P1IE &= ~BIT3;
+        // start and set watchdog timer
+        WDTCTL = WDT_MDLY_32;
+        // clear interrupt flag for the WDT
+        IFG1 &= ~WDTIFG;
+        // enable WDT interrupt
+        IE1 |= WDTIE;
+
+        static unsigned int calibrate_color = 0;
+        if (calibrate_color < 2)
+        {
+            color_ranges[red][calibrate_color] = color_values[red];
+            color_ranges[blue][calibrate_color] = color_values[blue];
+            color_ranges[clear][calibrate_color] = color_values[clear];
+            color_ranges[green][calibrate_color] = color_values[green];
+            ++calibrate_color;
+        }
+    }
+
     if (P1IFG & BIT4)
     {
         // clear P1.4 (STE) interrupt flag
@@ -79,6 +106,20 @@ __interrupt void port1_isr(void)
         sendCursor = SEND_G;
         receiveCursor = RECEIVE_STEERING;
     }
+}
+
+// used to debounce button press
+#pragma vector=WDT_VECTOR
+__interrupt void wdt_isr(void)
+{
+    // disable WDT interrupt
+    IE1 &= ~WDTIE;
+    // clear interrupt flag for the WDT
+    IFG1 &= ~WDTIFG;
+    // put WDT back in hold state
+    WDTCTL = WDTPW + WDTHOLD;
+    // enable button interrupt
+    P1IE |= BIT3;
 }
 
 #pragma vector=USCIAB0TX_VECTOR
