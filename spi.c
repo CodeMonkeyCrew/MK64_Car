@@ -63,7 +63,7 @@ __interrupt void port1_isr(void)
         // disable button interrupt
         P1IE &= ~BIT3;
         // start and set watchdog timer
-        WDTCTL = WDT_MDLY_32;
+        WDTCTL = WDT_ADLY_250; // 250 ms debouncing
         // clear interrupt flag for the WDT
         IFG1 &= ~WDTIFG;
         // enable WDT interrupt
